@@ -9,13 +9,14 @@ echo "export LFS=$LFS" > /root/.bashrc
 # 3.1
 mkdir -v $LFS/sources
 chmod -v a+wt $LFS/sources
-wget --input-file=wget-list --continue --directory-prefix=$LFS/sources
+#wget --input-file=wget-list --continue --directory-prefix=$LFS/sources
+cp md5sums $LFS/sources
 pushd $LFS/sources
   md5sum -c md5sums
 popd
 
 # Copy previously vendored patches from 3.3 into sources directory
-copy -R patches/* $LFS/sources
+cp -R patches/* $LFS/sources
 
 # 4.2
 mkdir -pv $LFS/{bin,etc,lib,sbin,usr,var}
@@ -29,7 +30,7 @@ groupadd lfs
 useradd -s /bin/bash -g lfs -m -k /dev/null lfs
 
 # Change the users password via stdin for automation
-echo $DEFAULT_LFS_PASSWORD | passwd --stdin lfs
+echo "lfs:$DEFAULT_LFS_PASSWORD" | chpasswd
 
 chown -v lfs $LFS/{usr,lib,var,etc,bin,sbin,tools}
 case $(uname -m) in
@@ -37,8 +38,13 @@ case $(uname -m) in
 esac
 chown -v lfs $LFS/sources
 
+# 4.4
+[ ! -e /etc/bash.bashrc ] || mv -v /etc/bash.bashrc /etc/bash.bashrc.NOUSE
+
 # Run commands as lfs user in HEREDOC since we can't actually
 # login as a user in a script
 su lfs <<HEREDOC
-  whoami
+  echo 'Running LFS user commands'
+  ./bin/lfs-user-setup.sh
+  ./bin/run-as-lfs.sh
 HEREDOC
