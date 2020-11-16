@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 echo "Building LFS"
 # 2.6
+export LFS_INSTALL=/LinuxFromScratch
 export LFS=/lfs
 export DEFAULT_LFS_PASSWORD=changeme
 echo "export LFS=$LFS" > /root/.bash_profile
@@ -43,8 +44,12 @@ chown -v lfs $LFS/sources
 
 # Run commands as lfs user in HEREDOC since we can't actually
 # login as a user in a script
-su lfs <<HEREDOC
-  echo 'Running LFS user commands'
-  ./bin/lfs-user-setup.sh
-  ./bin/run-as-lfs.sh
+runuser -l lfs <<HEREDOC
+  echo 'Setting up LFS .bash_profile and .bashrc'
+  $LFS_INSTALL/bin/lfs-user-setup.sh
+HEREDOC
+
+runuser -l lfs <<HEREDOC
+  echo 'Running commands as LFS user'
+  $LFS_INSTALL/bin/run-as-lfs.sh
 HEREDOC

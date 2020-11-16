@@ -1,13 +1,15 @@
 #!/usr/bin/bash
 # 4.4
 cat > ~/.bash_profile << "EOF"
-exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash
+echo 'loaded bash_profile'
+exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash -i
 EOF
 
 cat > ~/.bashrc << "EOF"
+echo 'loaded bashrc'
 set +h
 umask 022
-LFS=/mnt/lfs
+LFS=/lfs
 LC_ALL=POSIX
 LFS_TGT=$(uname -m)-lfs-linux-gnu
 PATH=/usr/bin
