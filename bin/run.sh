@@ -53,3 +53,6 @@ runuser -l lfs <<HEREDOC
   echo 'Running commands as LFS user'
   $LFS_INSTALL/bin/run-as-lfs.sh
 HEREDOC
+
+$LFS_INSTALL/bin/run-chroot-tasks.sh
+$LFS_INSTALL/bin/run-chroot-tasks-2.sh
