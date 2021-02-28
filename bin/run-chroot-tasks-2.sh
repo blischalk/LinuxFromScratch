@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euxo pipefail
 
 # 7.3 Preparing Virtual Kernel Filesystem Again
 mkdir -pv $LFS/{dev,proc,sys,run}
@@ -25,18 +26,18 @@ chroot "$LFS" /usr/bin/env -i   \
     TERM="$TERM"                \
     PS1='(lfs chroot) \u:\w\$ ' \
     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
-    /bin/bash --login -i +h <<HEREDOC
+    /bin/bash --login -i +h <<'HEREDOC'
 
 # 8.3.1 Man-pages
-cd $LFS/sources
+cd /sources
 tar -xf man-pages-5.08.tar.xz
 cd man-pages-5.08
 make install
-cd $LFS/sources
+cd /sources
 rm -rf man-pages-5.08
 
 # 8.4.1 Tcl
-cd $LFS/sources
+cd /sources
 tar -xf tcl8.6.10-src.tar.gz
 cd tcl8.6.10-src
 tar -xf ../tcl8.6.10-html.tar.gz --strip-components=1
@@ -68,12 +69,12 @@ make install
 chmod -v u+w /usr/lib/libtcl8.6.so
 make install-private-headers
 ln -sfv tclsh8.6 /usr/bin/tclsh
-cd $LFS/sources
+cd /sources
 rm -rf tcl8.6.10-src
 
 
 # 8.5.1 Expect
-cd $LFS/sources
+cd /sources
 tar -xf expect5.45.4.tar.gz
 cd expect5.45.4
 ./configure --prefix=/usr           \
@@ -85,11 +86,11 @@ make
 make test
 make install
 ln -svf expect5.45.4/libexpect5.45.4.so /usr/lib
-cd $LFS/sources
+cd /sources
 rm -rf expect5.45.4
 
 # 8.6.1 DejaGNU
-cd $LFS/sources
+cd /sources
 tar -xf dejagnu-1.6.2.tar.gz
 cd dejagnu-1.6.2
 ./configure --prefix=/usr
@@ -99,19 +100,19 @@ make install
 install -v -dm755  /usr/share/doc/dejagnu-1.6.2
 install -v -m644   doc/dejagnu.{html,txt} /usr/share/doc/dejagnu-1.6.2
 make check
-cd $LFS/sources
+cd /sources
 rm -rf dejagnu-1.6.2
 
 # 8.7.1 Iana-Etc
-cd $LFS/sources
+cd /sources
 tar -xf iana-etc-20200821.tar.gz
 cd iana-etc-20200821
 cp services protocols /etc
-cd $LFS/sources
+cd /sources
 rm -rf iana-etc-20200821
 
 # 8.8.1 Glibc
-cd $LFS/sources
+cd /sources
 tar -xf glibc-2.32.tar.xz
 cd glibc-2.32
 patch -Np1 -i ../glibc-2.32-fhs-1.patch
@@ -219,11 +220,11 @@ EOF
 mkdir -pv /etc/ld.so.conf.d
 
 
-cd $LFS/sources
+cd /sources
 rm -rf glibc-2.32
 
 # 8.9.1 Zlib
-cd $LFS/sources
+cd /sources
 tar -xf zlib-1.2.11.tar.xz
 cd zlib-1.2.11
 ./configure --prefix=/usr
@@ -232,11 +233,11 @@ make check
 make install
 mv -v /usr/lib/libz.so.* /lib
 ln -sfv ../../lib/$(readlink /usr/lib/libz.so) /usr/lib/libz.so
-cd $LFS/sources
+cd /sources
 rm -rf zlib-1.2.11
 
 # 8.10.1 Bzip2
-cd $LFS/sources
+cd /sources
 tar -xf bzip2-1.0.8.tar.gz
 cd bzip2-1.0.8
 patch -Np1 -i ../bzip2-1.0.8-install_docs-1.patch
@@ -252,11 +253,11 @@ ln -sv ../../lib/libbz2.so.1.0 /usr/lib/libbz2.so
 rm -v /usr/bin/{bunzip2,bzcat,bzip2}
 ln -sv bzip2 /bin/bunzip2
 ln -sv bzip2 /bin/bzcat
-bzip2-1.0.8cd $LFS/sources
+bzip2-1.0.8cd /sources
 rm -rf bzip2-1.0.8
 
 # 8.11.1 Xz
-cd $LFS/sources
+cd /sources
 tar -xf xz-5.2.5.tar.xz
 cd xz-5.2.5
 ./configure --prefix=/usr    \
@@ -269,12 +270,12 @@ mv -v   /usr/bin/{lzma,unlzma,lzcat,xz,unxz,xzcat} /bin
 mv -v /usr/lib/liblzma.so.* /lib
 ln -svf ../../lib/$(readlink /usr/lib/liblzma.so) /usr/lib/liblzma.so
 
-cd $LFS/sources
+cd /sources
 rm -rf xz-5.2.5
 
 # 8.12.1 Zstd
 
-cd $LFS/sources
+cd /sources
 tar -xf zstd-1.4.5.tar.gz
 cd zstd-1.4.5
 make
@@ -283,22 +284,22 @@ rm -v /usr/lib/libzstd.a
 mv -v /usr/lib/libzstd.so.* /lib
 ln -sfv ../../lib/$(readlink /usr/lib/libzstd.so) /usr/lib/libzstd.so
 
-cd $LFS/sources
+cd /sources
 rm -rf zstd-1.4.5
 
 # 8.13.1 File
-cd $LFS/sources
+cd /sources
 tar -xf file-5.39.tar.gz
 cd file-5.39
 ./configure --prefix=/usr
 make
 make check
 make install
-cd $LFS/sources
+cd /sources
 rm -rf file-5.39
 
 # 8.14.1 Readline
-cd $LFS/sources
+cd /sources
 tar -xf readline-8.0.tar.gz
 cd readline-8.0
 sed -i '/MV.*old/d' Makefile.in
@@ -314,11 +315,11 @@ chmod -v u+w /lib/lib{readline,history}.so.*
 ln -sfv ../../lib/$(readlink /usr/lib/libreadline.so) /usr/lib/libreadline.so
 ln -sfv ../../lib/$(readlink /usr/lib/libhistory.so ) /usr/lib/libhistory.so
 install -v -m644 doc/*.{ps,pdf,html,dvi} /usr/share/doc/readline-8.0
-cd $LFS/sources
+cd /sources
 rm -rf readline-8.0
 
 # 8.15.1 M4
-cd $LFS/sources
+cd /sources
 tar -xf m4-1.4.18.tar.xz
 cd m4-1.4.18
 sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
@@ -327,22 +328,22 @@ echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
 make
 make check
 make install
-cd $LFS/sources
+cd /sources
 rm -rf m4-1.4.18
 
 # 8.16.1 Bc
-cd $LFS/sources
+cd /sources
 tar -xf bc-3.1.5.tar.xz
 cd bc-3.1.5
 PREFIX=/usr CC=gcc CFLAGS="-std=c99" ./configure.sh -G -O3
 make
 make test
 make install
-cd $LFS/sources
+cd /sources
 rm -rf bc-3.1.5
 
 # 8.17.1 Flex
-cd $LFS/sources
+cd /sources
 tar -xf flex-2.6.4.tar.gz
 cd flex-2.6.4
 ./configure --prefix=/usr --docdir=/usr/share/doc/flex-2.6.4
@@ -350,11 +351,11 @@ make
 make check
 make install
 ln -sv flex /usr/bin/lex
-cd $LFS/sources
+cd /sources
 rm -rf flex-2.6.4
 
 # 8.18.1 Binutils
-cd $LFS/sources
+cd /sources
 tar -xf binutils-2.35.tar.xz
 cd binutils-2.35
 expect -c "spawn ls"
@@ -372,11 +373,11 @@ cd       build
 make tooldir=/usr
 make -k check
 make tooldir=/usr install
-cd $LFS/sources
+cd /sources
 rm -rf binutils-2.35
 
 # 8.19.1 GMP
-cd $LFS/sources
+cd /sources
 tar -xf gmp-6.2.0.tar.xz
 cd gmp-6.2.0
 ./configure --prefix=/usr    \
@@ -389,11 +390,11 @@ make check 2>&1 | tee gmp-check-log
 awk '/# PASS:/{total+=$3} ; END{print total}' gmp-check-log
 make install
 make install-html
-cd $LFS/sources
+cd /sources
 rm -rf gmp-6.2.0
 
 # 8.20.1 MPFR
-cd $LFS/sources
+cd /sources
 tar -xf mpfr-4.1.0.tar.xz
 cd mpfr-4.1.0
 ./configure --prefix=/usr        \
@@ -405,11 +406,11 @@ make html
 make check
 make install
 make install-html
-cd $LFS/sources
+cd /sources
 rm -rf mpfr-4.1.0
 
 # 8.21.1 MPC
-cd $LFS/sources
+cd /sources
 tar -xf mpc-1.1.0.tar.gz
 cd mpc-1.1.0
 ./configure --prefix=/usr    \
@@ -420,12 +421,12 @@ make html
 make check
 make install
 make install-html
-cd $LFS/sources
+cd /sources
 rm -rf mpc-1.1.0
 
 # 8.22.1 Attr
 
-cd $LFS/sources
+cd /sources
 tar -xf attr-2.4.48.tar.gz
 cd attr-2.4.48
 ./configure --prefix=/usr     \
@@ -438,11 +439,11 @@ make check
 make install
 mv -v /usr/lib/libattr.so.* /lib
 ln -sfv ../../lib/$(readlink /usr/lib/libattr.so) /usr/lib/libattr.so
-cd $LFS/sources
+cd /sources
 rm -rf attr-2.4.48
 
 # 8.23.1 Acl
-cd $LFS/sources
+cd /sources
 tar -xf acl-2.2.53.tar.gz
 cd acl-2.2.53
 ./configure --prefix=/usr         \
@@ -454,11 +455,11 @@ make
 make install
 mv -v /usr/lib/libacl.so.* /lib
 ln -sfv ../../lib/$(readlink /usr/lib/libacl.so) /usr/lib/libacl.so
-cd $LFS/sources
+cd /sources
 rm -rf acl-2.2.53
 
 # 8.24.1 Libcap
-cd $LFS/sources
+cd /sources
 tar -xf libcap-2.42.tar.xz
 cd libcap-2.42
 sed -i '/install -m.*STACAPLIBNAME/d' libcap/Makefile
@@ -469,11 +470,11 @@ chmod -v 755 /lib/libcap.so.2.42
 mv -v /lib/libpsx.a /usr/lib
 rm -v /lib/libcap.so
 ln -sfv ../../lib/libcap.so.2 /usr/lib/libcap.so
-cd $LFS/sources
+cd /sources
 rm -rf libcap-2.42
 
 # 8.25.1 Shadow
-cd $LFS/sources
+cd /sources
 tar -xf shadow-4.8.1.tar.xz
 cd shadow-4.8.1
 sed -i 's/groups$(EXEEXT) //' src/Makefile.in
@@ -495,7 +496,7 @@ grpconv
 # If we make it here Yay!
 passwd root
 
-cd $LFS/sources
+cd /sources
 rm -rf shadow-4.8.1
 
 # 8.26.1 GCC

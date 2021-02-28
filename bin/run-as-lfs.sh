@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+set -euxo pipefail
 
 
 # 5.2 Binutils Pass 1

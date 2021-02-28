@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euxo pipefail
 
 # 7.2 Changing Ownership
 chown -R root:root $LFS/{usr,lib,var,etc,bin,sbin,tools}
@@ -10,7 +11,7 @@ esac
 mkdir -pv $LFS/{dev,proc,sys,run}
 
 mknod -m 600 $LFS/dev/console c 5 1
-mknod -m 666 $LFS/dev/null c 1 
+mknod -m 666 $LFS/dev/null c 1 3
 
 mount -v --bind /dev $LFS/dev
 
@@ -99,7 +100,7 @@ chmod -v 664  /var/log/lastlog
 chmod -v 600  /var/log/btmp
 
 # 7.7 Libstdc++ from GCC pass 2
-cd $LFS/sources
+cd /sources
 tar -xf gcc-10.2.0.tar.xz
 cd gcc-10.2.0
 ln -s gthr-posix.h libgcc/gthr-default.h
@@ -114,33 +115,33 @@ cd       build
     --disable-libstdcxx-pch
 make
 make install
-cd $LFS/sources
+cd /sources
 rm -rf gcc-10.2.0
 
 # 7.8.1 Gettext
-cd $LFS/sources
+cd /sources
 tar -xf gettext-0.21.tar.xz
 cd gettext-0.21
 ./configure --disable-shared
 make
 cp -v gettext-tools/src/{msgfmt,msgmerge,xgettext} /usr/bin
-cd $LFS/sources
+cd /sources
 rm -rf gettext-0.21
 
 # 7.9.1 Bison
 
-cd $LFS/sources
+cd /sources
 tar -xf bison-3.7.1.tar.xz
 cd bison-3.7.1
 ./configure --prefix=/usr \
             --docdir=/usr/share/doc/bison-3.7.1
 make
 make install
-cd $LFS/sources
+cd /sources
 rm -rf bison-3.7.1
 
 # 7.10.1 Perl
-cd $LFS/sources
+cd /sources
 tar -xf perl-5.32.0.tar.xz
 cd perl-5.32.0
 sh Configure -des                                        \
@@ -154,11 +155,11 @@ sh Configure -des                                        \
              -Dvendorarch=/usr/lib/perl5/5.32/vendor_perl
 make
 make install
-cd $LFS/sources
+cd /sources
 rm -rf perl-5.32.0
 
 # 7.11.1 Python
-cd $LFS/sources
+cd /sources
 tar -xf Python-3.8.5.tar.xz
 cd Python-3.8.5
 ./configure --prefix=/usr   \
@@ -166,21 +167,21 @@ cd Python-3.8.5
             --without-ensurepip
 make
 make install
-cd $LFS/sources
+cd /sources
 rm -rf Python-3.8.5
 
 # 7.12.1 Texinfo
-cd $LFS/sources
+cd /sources
 tar -xf texinfo-6.7.tar.xz
 cd texinfo-6.7
 ./configure --prefix=/usr
 make
 make install
-cd $LFS/sources
+cd /sources
 rm -rf texinfo-6.7
 
 # 7.13.1 Util-linux
-cd $LFS/sources
+cd /sources
 tar -xf util-linux-2.36.tar.xz
 cd util-linux-2.36
 mkdir -pv /var/lib/hwclock
@@ -197,14 +198,13 @@ mkdir -pv /var/lib/hwclock
             --without-python
 make
 make install
-cd $LFS/sources
+cd /sources
 rm -rf util-linux-2.36
 
 # 7.14 Cleaning up
 find /usr/{lib,libexec} -name \*.la -delete
 rm -rf /usr/share/{info,man,doc}/*
 HEREDOC
-
 umount $LFS/dev{/pts,}
 umount $LFS/{sys,proc,run}
 

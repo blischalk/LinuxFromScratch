@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+set -euxo pipefail
 echo "Building LFS"
 # 2.6
 export LFS_INSTALL=/LinuxFromScratch

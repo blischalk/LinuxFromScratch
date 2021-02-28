@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+set -euxo pipefail
 # 4.4
 cat > ~/.bash_profile << "EOF"
 echo 'loaded bash_profile'
